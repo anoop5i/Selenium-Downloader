@@ -34,8 +34,10 @@ axios
 		const jsonObj = parser.parse(data.data, options).ListBucketResult.Contents;
 		let items = _.filter(jsonObj, (x) => {
 			const date = moment(x.LastModified);
-			const today = moment().subtract(10, 'days');
+			const today = moment().subtract(60, 'days');
 			return x.Key.includes('selenium-server-standalone') && date.isAfter(today);
+		}).then((it) => {
+			console.log(it);
 		});
 		console.log(items);
 		_.forEach(items, (x) => {
@@ -60,7 +62,7 @@ axios.get(chromeurl).then((data) => {
 	const jsonObj = parser.parse(data.data, options).ListBucketResult.Contents;
 	let items = _.filter(jsonObj, (x) => {
 		const date = moment(x.LastModified);
-		const today = moment().subtract(10, 'days');
+		const today = moment().subtract(50, 'days');
 		return x.Key.includes('chromedriver') && date.isAfter(today) && x.Key.includes(platform);
 	});
 	console.log(items);
