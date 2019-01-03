@@ -36,8 +36,6 @@ axios
 			const date = moment(x.LastModified);
 			const today = moment().subtract(60, 'days');
 			return x.Key.includes('selenium-server-standalone') && date.isAfter(today);
-		}).then((it) => {
-			console.log(it);
 		});
 		console.log(items);
 		_.forEach(items, (x) => {
