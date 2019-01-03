@@ -1,0 +1,19 @@
+{
+  "name": "selenium-jar-downloader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "download-file": "^0.1.5",
+    "fast-xml-parser": "^3.12.11",
+    "he": "^1.2.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.23.0"
+  }
+}
