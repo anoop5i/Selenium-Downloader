@@ -52,7 +52,7 @@ axios
 			_.forEach(items, (x) => {
 				console.log(`Selenium:`);
 				console.log(items);
-				download('https://selenium-release.storage.googleapis.com/' + x.Key, downloadOptions, (error) => {
+				download('https://selenium-release.storage.googleapis.com/' + x.Key, seleniumOptions, (error) => {
 					if (error) throw error;
 					console.log('downloaded');
 				});
