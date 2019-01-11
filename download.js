@@ -2,6 +2,7 @@ const axios = require('axios');
 const _ = require('lodash');
 const fs = require('fs');
 const moment = require('moment');
+const request = require('request');
 
 const parser = require('fast-xml-parser');
 const he = require('he');
@@ -14,9 +15,14 @@ const downloadOptions = {
 	filename: 'chromdriver.zip'
 };
 
+const geckoOptions = {
+	directory: './drivers',
+	filename: 'geckodriver.zip'
+};
+
 const seleniumOptions = {
 	directory: './drivers',
-	filename: 'selenium.jar'
+	filename: 'selenium-server-standalone.jar'
 };
 
 const options = {
@@ -47,14 +53,13 @@ axios
 			return x.Key.includes('selenium-server-standalone') && date.isAfter(today);
 		});
 		if (items.length === 0) {
-			console.log('No releases found for selnium-server-standalone within the last ${goBackDays}');
+			console.log(`No releases found for selnium-server-standalone within the last ${goBackDays} days`);
 		} else {
 			_.forEach(items, (x) => {
 				console.log(`Selenium:`);
-				console.log(items);
 				download('https://selenium-release.storage.googleapis.com/' + x.Key, seleniumOptions, (error) => {
 					if (error) throw error;
-					console.log('downloaded');
+					console.log('Downloaded selenium-server-standalone');
 				});
 			});
 		}
@@ -82,10 +87,28 @@ axios.get(chromeurl).then((data) => {
 		console.log(`No releases found for chrome driver within the last ${goBackDays} for the current platform.`);
 	} else if (items.length > 0) {
 		console.log(`Chromedriver:`);
-		console.log(items);
 		download(chromeurl + items[0].Key, downloadOptions, (error) => {
 			if (error) throw error;
-			console.log('downloaded');
+			console.log('Downloaded chromedriver');
 		});
 	}
+});
+
+axios.get('https://api.github.com/repos/mozilla/geckodriver/releases').then((data) => {
+	let assets_url = data.data[0].assets_url;
+	console.log(`Firefox assets URL is set to ${assets_url}`);
+	axios.get(assets_url).then((assets) => {
+		// console.log(assets.data);
+		let items = _.filter(assets.data, (x) => {
+			return x.name.includes(platform);
+		});
+		if (items == 0) {
+			console.log('No releases found for geckodriver');
+		} else {
+			const url = items[0].browser_download_url;
+			request(url).pipe(fs.createWriteStream('drivers/geckodriver.zip')).on('close', function() {
+				console.log('Gekcodriver downloaded');
+			});
+		}
+	});
 });
