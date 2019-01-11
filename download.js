@@ -8,7 +8,7 @@ const parser = require('fast-xml-parser');
 const he = require('he');
 const download = require('download-file');
 
-const goBackDays = 100;
+const goBackDays = 7;
 
 const downloadOptions = {
 	directory: './drivers',
