@@ -6,8 +6,17 @@ const moment = require('moment');
 const parser = require('fast-xml-parser');
 const he = require('he');
 const download = require('download-file');
+
+const goBackDays = 100;
+
 const downloadOptions = {
-	directory: './drivers'
+	directory: './drivers',
+	filename: 'chromdriver.zip'
+};
+
+const seleniumOptions = {
+	directory: './drivers',
+	filename: 'selenium.jar'
 };
 
 const options = {
@@ -34,24 +43,27 @@ axios
 		const jsonObj = parser.parse(data.data, options).ListBucketResult.Contents;
 		let items = _.filter(jsonObj, (x) => {
 			const date = moment(x.LastModified);
-			const today = moment().subtract(60, 'days');
+			const today = moment().subtract(goBackDays, 'days');
 			return x.Key.includes('selenium-server-standalone') && date.isAfter(today);
 		});
-		console.log(items);
-		_.forEach(items, (x) => {
-			download('https://selenium-release.storage.googleapis.com/' + x.Key, downloadOptions, (error) => {
-				if (error) throw error;
-				console.log('downloaded');
+		if (items.length === 0) {
+			console.log('No releases found for selnium-server-standalone within the last ${goBackDays}');
+		} else {
+			_.forEach(items, (x) => {
+				console.log(`Selenium:`);
+				console.log(items);
+				download('https://selenium-release.storage.googleapis.com/' + x.Key, downloadOptions, (error) => {
+					if (error) throw error;
+					console.log('downloaded');
+				});
 			});
-		});
+		}
 	})
 	.catch((error) => console.log(error));
 
 const chromeurl = 'https://chromedriver.storage.googleapis.com/';
-console.log(process.platform);
 
 let platform = 'linux64';
-console.log(process.platform);
 
 if (process.platform === 'win32') {
 	platform = 'win32';
@@ -63,11 +75,14 @@ axios.get(chromeurl).then((data) => {
 	const jsonObj = parser.parse(data.data, options).ListBucketResult.Contents;
 	let items = _.filter(jsonObj, (x) => {
 		const date = moment(x.LastModified);
-		const today = moment().subtract(100, 'days');
+		const today = moment().subtract(goBackDays, 'days');
 		return x.Key.includes('chromedriver') && date.isAfter(today) && x.Key.includes(platform);
 	});
-	console.log(items);
-	if (items.length > 0) {
+	if (items.length === 0) {
+		console.log(`No releases found for chrome driver within the last ${goBackDays} for the current platform.`);
+	} else if (items.length > 0) {
+		console.log(`Chromedriver:`);
+		console.log(items);
 		download(chromeurl + items[0].Key, downloadOptions, (error) => {
 			if (error) throw error;
 			console.log('downloaded');
