@@ -12,7 +12,7 @@ const goBackDays = 100;
 
 const downloadOptions = {
 	directory: './drivers',
-	filename: 'chromdriver.zip'
+	filename: 'chromedriver.zip'
 };
 
 const geckoOptions = {
