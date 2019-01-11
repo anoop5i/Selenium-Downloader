@@ -51,16 +51,19 @@ const chromeurl = 'https://chromedriver.storage.googleapis.com/';
 console.log(process.platform);
 
 let platform = 'linux64';
+console.log(process.platform);
+
 if (process.platform === 'win32') {
 	platform = 'win32';
-} else if (process.plaform === 'darwin') {
+} else if (process.platform === 'darwin') {
 	platform = 'mac64';
 }
+console.log(`Platform is set to ${platform}`);
 axios.get(chromeurl).then((data) => {
 	const jsonObj = parser.parse(data.data, options).ListBucketResult.Contents;
 	let items = _.filter(jsonObj, (x) => {
 		const date = moment(x.LastModified);
-		const today = moment().subtract(50, 'days');
+		const today = moment().subtract(100, 'days');
 		return x.Key.includes('chromedriver') && date.isAfter(today) && x.Key.includes(platform);
 	});
 	console.log(items);
